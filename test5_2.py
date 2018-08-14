@@ -132,14 +132,16 @@ def build_model():
 
   a1 = Input(shape=(8,))
   a2 = Input(shape=(8,))
-  b1 = Dense(1,activation='sigmoid')(a1)
-  b2 = Dense(1,activation='sigmoid')(a1)
+  b1 = Dense(16,activation='relu')(a1)
+  b2 = Dense(16,activation='relu')(a2)
+  c1 = Dense(1,activation='sigmoid')(b1)
+  c2 = Dense(1,activation='sigmoid')(b2)
   #b1 = Dense(1,activation='relu')(a1)
   #b2 = Dense(1,activation='relu')(a1)
 
   optimizer = tf.train.RMSPropOptimizer(0.001)
   optimizer = tf.keras.optimizers.RMSprop(lr=0.0005, rho=0.9, epsilon=1e-06)
-  model = Model(inputs=[a1,a2],outputs=[b1,b2])
+  model = Model(inputs=[a1,a2],outputs=[c1,c2])
 
   #model.compile(loss='mse',
   #              optimizer=optimizer,
@@ -149,7 +151,7 @@ def build_model():
   model.compile(loss='mape',
                 #optimizer='rmsprop',
                 optimizer=optimizer,
-                loss_weights=[1., 0.2],metrics=['mape', 'acc'])
+                loss_weights=[1., 0.2],metrics=['mape', 'mape'])
   return model
 
 model = build_model()
@@ -157,7 +159,7 @@ model.summary()
 
 # Display training progress by printing a single dot for each completed epoch.
 
-EPOCHS = 2000
+EPOCHS = 1000
 
 # Store training stats
 #a0 = keras.layers.Input(shape=(32,))
