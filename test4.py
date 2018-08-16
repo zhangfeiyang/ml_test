@@ -95,20 +95,30 @@ df.head(2)
 ##train_labels = (train_labels - mean) / std
 ##test_labels = (test_labels - mean) / std
 #
-def build_model():
-  model = keras.Sequential([
-    keras.layers.Dense(64, activation=tf.nn.relu, 
-        input_shape=(train_data.shape[1],)),
-    keras.layers.Dense(64, activation=tf.nn.relu),
-    keras.layers.Dense(1)
-    #keras.layers.Dense(2)
-  ])
 
-  optimizer = tf.train.RMSPropOptimizer(0.001)
+def build_model():
+  #model = keras.Sequential([
+  #  keras.layers.Dense(64, activation=tf.nn.relu, 
+  #      input_shape=(train_data.shape[1],)),
+  #  keras.layers.Dense(64, activation=tf.nn.relu),
+  #  keras.layers.Dense(1)
+  #  #keras.layers.Dense(2)
+  #])
+
+  model = keras.Sequential()
+  model.add(keras.layers.Dense(64,activation='relu', input_shape=(train_data.shape[1],)))
+  model.add(keras.layers.Dense(64,activation='relu'))
+  model.add(keras.layers.Dense(64,activation='relu'))
+  #model.add(keras.layers.Dense(64,activation='relu'))
+  #model.add(keras.layers.Dense(64,activation='relu'))
+  model.add(keras.layers.Dense(1))
+
+  #optimizer = tf.train.RMSPropOptimizer(0.001)
+  optimizer = tf.keras.optimizers.RMSprop(lr=0.0005, rho=0.9, epsilon=1e-06)
 
   model.compile(loss='mse',
                 optimizer=optimizer,
-                metrics=['mae'])
+                metrics=['mape'])
   return model
 
 model = build_model()
@@ -116,7 +126,7 @@ model.summary()
 
 # Display training progress by printing a single dot for each completed epoch.
 
-EPOCHS = 30 
+EPOCHS = 1000 
 
 # Store training stats
 #a0 = keras.layers.Input(shape=(32,))
@@ -143,16 +153,16 @@ def plot_history(history):
   plt.figure()
   plt.xlabel('Epoch')
   plt.ylabel('Mean Abs Error [1000$]')
-  plt.plot(history.epoch, np.array(history.history['mean_absolute_error']),
+  plt.plot(history.epoch, np.array(history.history['mean_absolute_percentage_error']),
            label='Train Loss')
-  plt.plot(history.epoch, np.array(history.history['val_mean_absolute_error']),
+  plt.plot(history.epoch, np.array(history.history['val_mean_absolute_percentage_error']),
            label = 'Val loss')
   plt.legend()
   plt.ylim([0,0.01])
   plt.show()
 
 history = model.fit(train_data, train_labels, epochs=EPOCHS,
-        validation_split=0.2, verbose=2)
+        validation_split=0.2, verbose=2,batch_size=2000)
 
 plot_history(history)
 

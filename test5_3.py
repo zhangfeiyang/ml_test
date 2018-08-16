@@ -14,10 +14,11 @@ f = TFile('data3.root',"read")
 t = f.Get("t")
 
 entries = t.GetEntries()
-entries = 600000+1000
+#entries = 600000+1000
+entries = 60000+1000
 
 train_data = [[],[]]
-train_labels = [[],[]]
+train_labels = [[]]
 for i in range(0,entries-1000):
     t.GetEntry(i)
     a = t.GetLeaf('eplusm2').GetValue(0)
@@ -52,10 +53,10 @@ for i in range(0,entries-1000):
     #train_data.append([em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7,m0,m1,m2,m3,m4,m5,m6,m7])
     #train_labels.append([b,b])
     train_labels[0].append([b])
-    train_labels[1].append([b])
+    #train_labels[1].append([b])
 
 test_data = [[],[]]
-test_labels = [[],[]]
+test_labels = [[]]
 for i in range(entries-1000,entries):
     t.GetEntry(i)
 #    a = t.GetLeaf('a').GetValue(0)
@@ -93,15 +94,15 @@ for i in range(entries-1000,entries):
     #test_data.append([em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7,m0,m1,m2,m3,m4,m5,m6,m7])
     #test_labels.append([b,b])
     test_labels[0].append([b])
-    test_labels[1].append([b])
+    #test_labels[1].append([b])
 
 import pandas as pd
 column_names = [['e0','e1','e2','e3','e4','e5','e6','e7'],['e0','e1','e2','e3','e4','e5','e6','e7']]
 #column_names = ['e0','e1','e2','e3','e4','e5','e6','e7','m0','m1','m2','m3','m4','m5','m6','m7']
 train_data = [np.array(train_data[0]),np.array(train_data[1])]
 test_data = [np.array(test_data[0]),np.array(test_data[1])]
-train_labels = [np.array(train_labels[0]),np.array(train_labels[1])]
-test_labels = [np.array(test_labels[0]),np.array(test_labels[1])]
+train_labels = [np.array(train_labels[0])]
+test_labels = [np.array(test_labels[0])]
 
 #
 #df = pd.DataFrame(train_data, columns=column_names)
@@ -132,16 +133,17 @@ def build_model():
 
   a1 = Input(shape=(8,))
   a2 = Input(shape=(8,))
-  b1 = Dense(16,activation='relu')(a1)
+  b1 = Dense(64,activation='relu')(a1)
+  c1 = Dense(64,activation='relu')(b1)
   b2 = Dense(16,activation='relu')(a2)
-  c1 = Dense(1,activation='sigmoid')(b1)
+  d1 = Dense(1,activation='sigmoid')(c1)
   c2 = Dense(1,activation='sigmoid')(b2)
   #b1 = Dense(1,activation='relu')(a1)
   #b2 = Dense(1,activation='relu')(a1)
 
   optimizer = tf.train.RMSPropOptimizer(0.001)
-  optimizer = tf.keras.optimizers.RMSprop(lr=0.0005, rho=0.9, epsilon=1e-06)
-  model = Model(inputs=[a1,a2],outputs=[c1,c2])
+  optimizer = tf.keras.optimizers.RMSprop(lr=0.0001, rho=0.9, epsilon=1e-06)
+  model = Model(inputs=[a1,a2],outputs=[d1])
 
   #model.compile(loss='mse',
   #              optimizer=optimizer,
@@ -151,7 +153,8 @@ def build_model():
   model.compile(loss='mape',
                 #optimizer='rmsprop',
                 optimizer=optimizer,
-                loss_weights=[1., 0.2],metrics=['mape', 'mape'])
+                #loss_weights=[1., 0.2],metrics=['mape', 'mape'])
+                metrics=['mape'])
   return model
 
 model = build_model()
@@ -213,7 +216,7 @@ predict_y = model.predict(test_data, batch_size=None, verbose=2, steps=None)
 h = TH1F('h','',100,0,0)
 for i in range(0,len(predict_y[0])):
     #print(predict_y[0][i][0],test_labels[0][i][0])
-    h.Fill(predict_y[0][i][0]/test_labels[0][i][0]-1)
+    h.Fill(predict_y[0][i]/test_labels[0][i]-1)
 print('rms is',h.GetRMS(),h.GetMean())
 file.write('rms is '+str(h.GetRMS())+'\t'+str(h.GetMean()))
 file.close()

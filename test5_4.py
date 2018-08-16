@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras.layers import Input, Embedding, LSTM, Dense
 import numpy as np
 N = 500
 import random
@@ -14,7 +15,7 @@ f = TFile('data3.root',"read")
 t = f.Get("t")
 
 entries = t.GetEntries()
-entries = 600000+1000
+entries = 10000+1000
 
 train_data = [[],[]]
 train_labels = [[],[]]
@@ -52,7 +53,7 @@ for i in range(0,entries-1000):
     #train_data.append([em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7,m0,m1,m2,m3,m4,m5,m6,m7])
     #train_labels.append([b,b])
     train_labels[0].append([b])
-    train_labels[1].append([b])
+    train_labels[1].append([a])
 
 test_data = [[],[]]
 test_labels = [[],[]]
@@ -93,7 +94,7 @@ for i in range(entries-1000,entries):
     #test_data.append([em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7,m0,m1,m2,m3,m4,m5,m6,m7])
     #test_labels.append([b,b])
     test_labels[0].append([b])
-    test_labels[1].append([b])
+    test_labels[1].append([a])
 
 import pandas as pd
 column_names = [['e0','e1','e2','e3','e4','e5','e6','e7'],['e0','e1','e2','e3','e4','e5','e6','e7']]
@@ -130,18 +131,30 @@ def build_model():
   #  #keras.layers.Dense(2)
   #])
 
-  a1 = Input(shape=(8,))
-  a2 = Input(shape=(8,))
-  b1 = Dense(16,activation='relu')(a1)
-  b2 = Dense(16,activation='relu')(a2)
-  c1 = Dense(1,activation='sigmoid')(b1)
-  c2 = Dense(1,activation='sigmoid')(b2)
+  #a1 = Input(shape=(8,))
+  #a2 = Input(shape=(8,))
+  #b1 = Dense(16,activation='relu')(a1)
+  #b2 = Dense(16,activation='relu')(a2)
+  #c1 = Dense(1,activation='sigmoid')(b1)
+  #c2 = Dense(1,activation='sigmoid')(b2)
+
+  main_input = Input(shape=(8,),name = "main_input")
+  x = Embedding(output_dim=512, input_dim=10000, input_length=100)(main_input)
+  lstm_out = LSTM(32)(x)
+  auxiliary_output = Dense(1, activation='sigmoid', name='aux_output')(lstm_out)
+  auxiliary_input = Input(shape=(8,), name='aux_input')
+  x = keras.layers.concatenate([lstm_out, auxiliary_input])
+  x = Dense(64, activation='relu')(x)
+  #x = Dense(64, activation='relu')(x)
+  #x = Dense(64, activation='relu')(x)
+  main_output = Dense(1, activation='sigmoid', name='main_output')(x)
+
   #b1 = Dense(1,activation='relu')(a1)
   #b2 = Dense(1,activation='relu')(a1)
 
   optimizer = tf.train.RMSPropOptimizer(0.001)
-  optimizer = tf.keras.optimizers.RMSprop(lr=0.0005, rho=0.9, epsilon=1e-06)
-  model = Model(inputs=[a1,a2],outputs=[c1,c2])
+  optimizer = tf.keras.optimizers.RMSprop(lr=0.01, rho=0.9, epsilon=1e-06)
+  model = Model(inputs=[main_input,auxiliary_input],outputs=[main_output,auxiliary_output])
 
   #model.compile(loss='mse',
   #              optimizer=optimizer,
@@ -151,7 +164,7 @@ def build_model():
   model.compile(loss='mape',
                 #optimizer='rmsprop',
                 optimizer=optimizer,
-                loss_weights=[1., 0.2],metrics=['mape', 'mape'])
+                loss_weights=[1., 0.1],metrics=['mape', 'mape'])
   return model
 
 model = build_model()
@@ -202,7 +215,7 @@ def plot_history(history):
   plt.show()
 
 history = model.fit(train_data, train_labels, epochs=EPOCHS,
-        validation_split=0.1, verbose=2, batch_size=5000)
+        validation_split=0.1, verbose=2, batch_size=100)
 
 plot_history(history)
 #

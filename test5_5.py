@@ -8,14 +8,24 @@ import ROOT
 from ROOT import TH1F, TTree, TFile
 import os
 
+<<<<<<< HEAD
 energy = [6.13,2.5057,0.6617,1.022,1.4608,0.8345,4.945,2.223]
 
 f = TFile('data4.root',"read")
+=======
+energy = [6.13,2.5057,0.6617,1.022,1.4608,0.8345,4.945,7.5,2.223]
+
+f = TFile('data3.root',"read")
+>>>>>>> e11559f79174e7474884bfe969cd86faf52e2483
 t = f.Get("t")
 
 entries = t.GetEntries()
 #entries = 600000+1000
+<<<<<<< HEAD
 entries = 10+1000
+=======
+entries = 100000+1000
+>>>>>>> e11559f79174e7474884bfe969cd86faf52e2483
 
 train_data = [[],[]]
 train_labels = [[]]
@@ -43,6 +53,7 @@ for i in range(0,entries-1000):
     m7 = t.GetLeaf('gm7').GetValue(0)
 
     train_data[0].append([em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7])
+<<<<<<< HEAD
     print('0 is ',[em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7])
     mean = [m0,m1,m2,m3,m4,m5,m6,m7]
     for i in range(0,len(mean)):
@@ -51,6 +62,13 @@ for i in range(0,entries-1000):
     for i in range(0,len(mean)):
         mean[i] = mean[i]/mean[7]
     print('1 is ',mean)
+=======
+    mean = [m0,m1,m2,m3,m4,m5,m6,m7]
+    for i in range(0,len(mean)):
+        mean[i] = mean[i]/energy[i]
+    for i in range(0,len(mean)):
+        mean[i] = mean[i]/mean[1]
+>>>>>>> e11559f79174e7474884bfe969cd86faf52e2483
     train_data[1].append(mean)
 
     #train_data.append([em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7,m0,m1,m2,m3,m4,m5,m6,m7])
@@ -91,7 +109,11 @@ for i in range(entries-1000,entries):
     for i in range(0,len(mean)):
         mean[i] = mean[i]/energy[i]
     for i in range(0,len(mean)):
+<<<<<<< HEAD
         mean[i] = mean[i]/mean[7]
+=======
+        mean[i] = mean[i]/mean[1]
+>>>>>>> e11559f79174e7474884bfe969cd86faf52e2483
     test_data[1].append(mean)
 
     #test_data.append([em0/m0,em1/m1,em2/m2,em3/m3,em4/m4,em5/m5,em6/m6,em7/m7,m0,m1,m2,m3,m4,m5,m6,m7])
@@ -172,7 +194,11 @@ model.summary()
 
 # Display training progress by printing a single dot for each completed epoch.
 
+<<<<<<< HEAD
 EPOCHS = 10
+=======
+EPOCHS = 500
+>>>>>>> e11559f79174e7474884bfe969cd86faf52e2483
 
 # Store training stats
 #a0 = keras.layers.Input(shape=(32,))
@@ -211,11 +237,18 @@ def plot_history(history):
            label = 'Val loss')
   plt.legend()
   plt.ylim([0,5])
+<<<<<<< HEAD
+=======
+  plt.savefig(str(seed)+'/result')
+>>>>>>> e11559f79174e7474884bfe969cd86faf52e2483
   plt.show()
 
 history = model.fit(train_data, train_labels, epochs=EPOCHS,
         validation_split=0.1, verbose=2, batch_size=50)
+<<<<<<< HEAD
 model.save('model_tm.h5')
+=======
+>>>>>>> e11559f79174e7474884bfe969cd86faf52e2483
 
 plot_history(history)
 #
