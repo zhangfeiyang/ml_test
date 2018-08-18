@@ -10,14 +10,14 @@ import os
 
 energy = [6.13,2.5057,0.6617,1.022,1.4608,0.8345,4.945,2.223]
 
-f = TFile('data4.root',"read")
+f = TFile('data5.root',"read")
 t = f.Get("t")
 
 entries = t.GetEntries()
 
 train_data = [[],[]]
 train_labels = [[]]
-for i in range(0,entries-1000):
+for i in range(0,entries-10000):
     t.GetEntry(i)
     a = t.GetLeaf('eplusm2').GetValue(0)
     b = t.GetLeaf('eeplusm2').GetValue(0)
@@ -55,7 +55,7 @@ for i in range(0,entries-1000):
 
 test_data = [[],[]]
 test_labels = [[]]
-for i in range(entries-1000,entries):
+for i in range(entries-10000,entries):
     t.GetEntry(i)
 #    a = t.GetLeaf('a').GetValue(0)
 #    b = t.GetLeaf('b').GetValue(0)
@@ -147,7 +147,7 @@ def build_model():
   #b2 = Dense(1,activation='relu')(a1)
 
   optimizer = tf.train.RMSPropOptimizer(0.001)
-  optimizer = tf.keras.optimizers.RMSprop(lr=0.0005, rho=0.9, epsilon=1e-06)
+  optimizer = tf.keras.optimizers.RMSprop(lr=0.005, rho=0.9, epsilon=1e-06)
   model = Model(inputs=[a1,a2],outputs=[b2])
 
   #model.compile(loss='mse',
@@ -167,7 +167,7 @@ model.summary()
 
 # Display training progress by printing a single dot for each completed epoch.
 
-EPOCHS = 10
+EPOCHS = 20
 
 # Store training stats
 #a0 = keras.layers.Input(shape=(32,))
@@ -210,8 +210,8 @@ def plot_history(history):
   plt.show()
 
 history = model.fit(train_data, train_labels, epochs=EPOCHS,shuffle=True,
-        validation_split=0.1, verbose=2, batch_size=50)
-model.save('model.h5')
+        validation_split=0.1, verbose=2, batch_size=500)
+model.save('model2.h5')
 
 plot_history(history)
 #

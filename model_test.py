@@ -12,8 +12,8 @@ from tensorflow.keras.models import load_model
 
 energy = [6.13,2.5057,0.6617,1.022,1.4608,0.8345,4.945,2.223]
 
-f = TFile('data3.root',"read")
-t = f.Get("t")
+#f = TFile('data3.root',"read")
+#t = f.Get("t")
 
 
 #for i in range(0,1000):
@@ -73,13 +73,13 @@ test_data[0].append(Datas0)
 test_data[1].append(Datas1)
 test_data = [np.array(test_data[0]),np.array(test_data[1])]
 
-print(test_data)
+#print(test_data)
 
-model = load_model('model8.h5')
-predict_y = model.predict(test_data, batch_size=None, verbose=2, steps=None)
-print('predict_y is ',predict_y)
-#h = TH1F('h','',100,0,0)
-#for i in range(0,len(predict_y)):
-#    print(predict_y[0])    
-#    h.Fill(predict_y[i]/test_labels[0][i]-1)
-#print('rms is',h.GetRMS(),' and mean is',h.GetMean())
+true_res = [0.020671583,0.017234361,0.015143339,0.013876175,0.012954409,0.012126370,0.011503920]
+
+
+for i in range(2,9):
+    model = load_model('model'+str(i)+'.h5')
+    predict_y = model.predict(test_data, batch_size=None, verbose=2, steps=None)
+    print(i,'MeV e+ bias is ',100*(predict_y-true_res[i-2]))
+    print(i,'MeV e+ bias is ',100*(predict_y/true_res[i-2]-1))

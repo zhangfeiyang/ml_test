@@ -169,7 +169,7 @@ model.summary()
 
 # Display training progress by printing a single dot for each completed epoch.
 
-EPOCHS = 100
+EPOCHS = 20
 
 # Store training stats
 #a0 = keras.layers.Input(shape=(32,))
@@ -213,10 +213,10 @@ def plot_history(history):
 
 from tensorflow.keras.models import load_model
 
-for i in range(0,20):
+for i in range(0,100):
     model = load_model('model3.h5')
     history = model.fit(train_data, train_labels, epochs=EPOCHS,
-        validation_split=0.1, verbose=2, batch_size=50)
+        validation_split=0.1, verbose=2, batch_size=100)
     model.save('model3.h5')
 
 plot_history(history)

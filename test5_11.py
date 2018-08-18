@@ -10,14 +10,14 @@ import os
 
 energy = [6.13,2.5057,0.6617,1.022,1.4608,0.8345,4.945,2.223]
 
-f = TFile('data4.root',"read")
+f = TFile('data5.root',"read")
 t = f.Get("t")
 
 entries = t.GetEntries()
 
 train_data = [[],[]]
 train_labels = [[]]
-for i in range(0,entries-1000):
+for i in range(0,entries-10000):
     t.GetEntry(i)
     a = t.GetLeaf('eplusm7').GetValue(0)
     b = t.GetLeaf('eeplusm7').GetValue(0)
@@ -210,7 +210,7 @@ def plot_history(history):
   plt.show()
 
 history = model.fit(train_data, train_labels, epochs=EPOCHS,shuffle=True,
-        validation_split=0.1, verbose=2, batch_size=50)
+        validation_split=0.1, verbose=2, batch_size=500)
 model.save('model7.h5')
 
 plot_history(history)

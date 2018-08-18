@@ -10,7 +10,7 @@ import os
 
 energy = [6.13,2.5057,0.6617,1.022,1.4608,0.8345,4.945,2.223]
 
-f = TFile('data4.root',"read")
+f = TFile('data5.root',"read")
 t = f.Get("t")
 
 entries = t.GetEntries()
@@ -21,8 +21,8 @@ train_data = [[],[]]
 train_labels = [[]]
 for i in range(0,entries-10000):
     t.GetEntry(i)
-    a = t.GetLeaf('eplusm4').GetValue(0)
-    b = t.GetLeaf('eeplusm4').GetValue(0)
+    a = t.GetLeaf('eplusm2').GetValue(0)
+    b = t.GetLeaf('eeplusm2').GetValue(0)
     b = b/a
     em0 = t.GetLeaf('egm0').GetValue(0)
     em1 = t.GetLeaf('egm1').GetValue(0)
@@ -61,8 +61,8 @@ for i in range(entries-10000,entries):
     t.GetEntry(i)
 #    a = t.GetLeaf('a').GetValue(0)
 #    b = t.GetLeaf('b').GetValue(0)
-    a = t.GetLeaf('eplusm4').GetValue(0)
-    b = t.GetLeaf('eeplusm4').GetValue(0)
+    a = t.GetLeaf('eplusm2').GetValue(0)
+    b = t.GetLeaf('eeplusm2').GetValue(0)
     b = b/a
     em0 = t.GetLeaf('egm0').GetValue(0)
     em1 = t.GetLeaf('egm1').GetValue(0)
@@ -213,11 +213,11 @@ def plot_history(history):
 
 from tensorflow.keras.models import load_model
 
-for i in range(0,100):
-    model = load_model('model4.h5')
+for i in range(0,20):
+    model = load_model('model2.h5')
     history = model.fit(train_data, train_labels, epochs=EPOCHS,
-        validation_split=0.1, verbose=2, batch_size=100)
-    model.save('model4.h5')
+        validation_split=0.1, verbose=2, batch_size=50)
+    model.save('model2.h5')
 
 plot_history(history)
 #
