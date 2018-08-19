@@ -76,10 +76,9 @@ classifier.train(
         input_fn=lambda:tain_input_fn(train_x,train_y,100),steps=100)
 
 eval_result = classifier.evaluate(
-    input_fn=lambda:tain_input_fn(train_x, train_y,
-                                       100))
-print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
+                input_fn=lambda:tain_input_fn(train_x,train_y,100),steps=100)
 
+print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
 #def build_model():
 #  a1 = Input(shape=(1774,))
